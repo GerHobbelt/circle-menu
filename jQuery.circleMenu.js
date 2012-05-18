@@ -211,7 +211,7 @@
             selected = self.element.children('li:nth-child('+index+')');
             self.trigger('select',selected);
             vendorPrefixes(selected.add(set_other), 'transition', 'all 500ms ease-out');
-            vendorPrefixes(selected, 'transform', 'scale(2)');
+            vendorPrefixes(selected, 'transform', 'scale(' + (self.options.itemSelectedScale || 2) + ')');
             vendorPrefixes(set_other, 'transform', 'scale(0)');
             selected.css('opacity','0');
             set_other.css('opacity','0');
