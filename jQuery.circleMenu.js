@@ -232,6 +232,7 @@
 
         self._state = 'closed';
         self.element.removeClass(pluginName+'-open');
+        self.element.addClass(pluginName+'-closed');
         self.element.css({
             'list-style': 'none',
             'margin': 0,
