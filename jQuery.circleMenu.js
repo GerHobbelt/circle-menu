@@ -270,10 +270,14 @@
                 commands = {
                 'init':function(){obj.init();},
                 'open':function(){obj.open();},
-                'close':function(){obj.close(true);}
+                'close':function(){obj.close(true),
+                'refresh':function(){obj.init(options);}
             };
             if(typeof options === 'string' && obj && commands[options]){
                 commands[options]();
+            }
+            if(typeof options === 'object' && obj && commands[options.command]){
+                commands[options.command](options);
             }
             if(!obj){
                 $.data(this, 'plugin_' + pluginName, new CircleMenu(this, options));
