@@ -8,19 +8,26 @@
                 start: 0,
                 end: 90
             },
+            direction: null, // ~ the other way to set up the start+end angles
             speed: 500,
             delay: 1000,
             step_out: 20,
             step_in: -20,
             trigger: 'hover',
             transition_function: 'ease',
-            item_selected_scale: 2
+            item_selected_scale: 2,
+
+            // event callbacks, which are trigger()ed as event name circleMenu-<event>
+            open: null,
+            close: null,
+            init: null,
+            select: null        // selected element (jQuery DOM node object) is passed as first trigger parameter, the item index as the second parameter
         };
 
-    function vendorPrefixes(items,prop,value){
+    function vendorPrefixes(items, prop, value){
         var browserArr = ['-webkit-','-moz-','-o-','-ms-',''];
         for(var i = 0; i < browserArr.length; i++){
-            items.css(browserArr[i]+prop,value);
+            items.css(browserArr[i] + prop, value);
         }
     }
 
@@ -74,10 +81,10 @@
                 x = Math.round(self.options.circle_radius * Math.cos(angle)),
                 y = Math.round(self.options.circle_radius * Math.sin(angle));
 
-            $item.data('plugin_'+pluginName+'-pos-x', x);
-            $item.data('plugin_'+pluginName+'-pos-y', y);
+            $item.data('plugin_' + pluginName + '-pos-x', x);
+            $item.data('plugin_' + pluginName + '-pos-y', y);
             $item.on('click', function(){
-                self.select(index+2);
+                self.select(index + 2);
             });
         });
 
@@ -88,15 +95,17 @@
 
             if(self.options[evt]){
                 fn = self.options[evt];
-                self.element.on(pluginName+'-'+evt, function(){
-                    return fn.apply(self,arguments);
+                self.element.on(pluginName + '-' + evt, function(){
+                    return fn.apply(self, arguments);
                 });
                 delete self.options[evt];
             }
         }
 
         self.submenus = self.menu_items.children('ul');
-        self.submenus.circleMenu($.extend({},self.options,{depth:self.options.depth+1}));
+        self.submenus.circleMenu($.extend({},self.options,{
+            depth: self.options.depth + 1
+        }));
 
         self.trigger('init');
     };
@@ -107,7 +116,7 @@
         for(i = 0, len = arguments.length; i < len; i++){
             args.push(arguments[i]);
         }
-        this.element.trigger(pluginName+'-'+args.shift(), args);
+        this.element.trigger(pluginName + '-' + args.shift(), args);
     };
     CircleMenu.prototype.hook = function(){
         var self = this;
@@ -152,16 +161,16 @@
 
             self._timeouts.push(setTimeout(function(){
                 $item.css({
-                    left: $item.data('plugin_'+pluginName+'-pos-x')+'px',
-                    top: $item.data('plugin_'+pluginName+'-pos-y')+'px'
+                    left: $item.data('plugin_' + pluginName + '-pos-x') + 'px',
+                    top: $item.data('plugin_' + pluginName + '-pos-y') + 'px'
                 });
-                vendorPrefixes($item,'transform','scale(1)');
+                vendorPrefixes($item, 'transform', 'scale(1)');
             }, start + Math.abs(self.options.step_out) * index));
         });
         self._timeouts.push(setTimeout(function(){
             if(self._state === 'opening') self.trigger('open');
             self._state = 'open';
-        },start+Math.abs(self.options.step_out) * set.length));
+        },start + Math.abs(self.options.step_out) * set.length));
         self._state = 'opening';
         return self;
     };
@@ -184,23 +193,26 @@
                 var $item = $(this);
 
                 self._timeouts.push(setTimeout(function(){
-                    $item.css({top:0,left:0});
-                    vendorPrefixes($item,'transform','scale(.5)');
+                    $item.css({
+                        top: 0, 
+                        left: 0
+                    });
+                    vendorPrefixes($item, 'transform', 'scale(.5)');
                 }, start + Math.abs(self.options.step_in) * index));
             });
             self._timeouts.push(setTimeout(function(){
                 if(self._state === 'closing') self.trigger('close');
                 self._state = 'closed';
-            },start+Math.abs(self.options.step_in) * set.length));
-            $self.removeClass(pluginName+'-open');
-            $self.addClass(pluginName+'-closed');
+            },start + Math.abs(self.options.step_in) * set.length));
+            $self.removeClass(pluginName + '-open');
+            $self.addClass(pluginName + '-closed');
             self._state = 'closing';
             return self;
         };
         if(immediate){
             do_animation();
         }else{
-            self._timeouts.push(setTimeout(do_animation,self.options.delay));
+            self._timeouts.push(setTimeout(do_animation, self.options.delay));
         }
         return this;
     };
@@ -212,14 +224,16 @@
             self.clearTimeouts();
             set_other = self.element.children('li:not(:nth-child('+index+'),:first-child)');
             selected = self.element.children('li:nth-child('+index+')');
-            self.trigger('select',selected);
+            self.trigger('select', selected, index);
             vendorPrefixes(selected.add(set_other), 'transition', 'all 500ms ease-out');
             vendorPrefixes(selected, 'transform', 'scale(' + self.options.item_selected_scale + ')');
             vendorPrefixes(set_other, 'transform', 'scale(0)');
-            selected.css('opacity','0');
-            set_other.css('opacity','0');
-            self.element.removeClass(pluginName+'-open');
-            setTimeout(function(){self.initCss();},500);
+            selected.css('opacity', '0');
+            set_other.css('opacity', '0');
+            self.element.removeClass(pluginName + '-open');
+            setTimeout(function(){
+                self.initCss();
+            }, 500);
         }
     };
     CircleMenu.prototype.clearTimeouts = function(){
@@ -240,40 +254,50 @@
             'list-style': 'none',
             'margin': 0,
             'padding': 0,
-            'width': self.options.item_diameter+'px'
+            'width': self.options.item_diameter + 'px'
         });
         $items = self.element.children('li');
         $items.attr('style','');
         $items.css({
             'display': 'block',
-            'width': self.options.item_diameter+'px',
-            'height': self.options.item_diameter+'px',
+            'width': self.options.item_diameter + 'px',
+            'height': self.options.item_diameter + 'px',
             'text-align': 'center',
-            'line-height': self.options.item_diameter+'px',
+            'line-height': self.options.item_diameter + 'px',
             'position': 'absolute',
             'z-index': 1,
             'opacity': ''
         });
-        self.element.children('li:first-child').css({'z-index': 1000-self.options.depth});
-        self.menu_items.css({
-            top:0,
-            left:0
+        self.element.children('li:first-child').css({
+            'z-index': 1000 - self.options.depth
         });
-        vendorPrefixes($items, 'border-radius', self.options.item_diameter+'px');
+        self.menu_items.css({
+            top: 0,
+            left: 0
+        });
+        vendorPrefixes($items, 'border-radius', self.options.item_diameter + 'px');
         vendorPrefixes(self.menu_items, 'transform', 'scale(.5)');
         setTimeout(function(){
-            vendorPrefixes($items, 'transition', 'all '+self.options.speed+'ms '+self.options.transition_function);
+            vendorPrefixes($items, 'transition', 'all ' + self.options.speed + 'ms ' + self.options.transition_function);
         },0);
     };
 
     $.fn[pluginName] = function(options){
         return this.each(function(){
-            var obj = $.data(this, 'plugin_'+pluginName),
+            var obj = $.data(this, 'plugin_' + pluginName),
                 commands = {
-                'init':function(){obj.init();},
-                'open':function(){obj.open();},
-                'close':function(){obj.close(true);},
-                'refresh':function(){obj.init(options);}
+                'init':function(){
+                    obj.init();
+                },
+                'open':function(){
+                    obj.open();
+                },
+                'close':function(){
+                    obj.close(true);
+                },
+                'refresh':function(){
+                    obj.init(options);
+                }
             };
             if(typeof options === 'string' && obj && commands[options]){
                 commands[options]();
