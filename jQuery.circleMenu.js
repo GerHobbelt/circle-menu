@@ -18,9 +18,10 @@
         };
 
     function vendorPrefixes(items,prop,value){
-        ['-webkit-','-moz-','-o-','-ms-',''].forEach=function(prefix){
-            items.css(prefix+prop,value);
-        };
+        var browserArr = ['-webkit-','-moz-','-o-','-ms-',''];
+        for(var i = 0; i < browserArr.length; i++){
+            items.css(browserArr[i]+prop,value);
+        }
     }
 
     function CircleMenu(element, options){
@@ -81,8 +82,9 @@
         });
 
         // Initialize event hooks from options
-        ['open','close','init','select'].forEach=function(evt){
-            var fn;
+        var hooksArr = ['open','close','init','select'];
+        for(var i = 0; i < hooksArr.length; i++){
+            var fn, evt = hooksArr[i];
 
             if(self.options[evt]){
                 fn = self.options[evt];
@@ -91,7 +93,7 @@
                 });
                 delete self.options[evt];
             }
-        };
+        }
 
         self.submenus = self.menu_items.children('ul');
         self.submenus.circleMenu($.extend({},self.options,{depth:self.options.depth+1}));
@@ -228,7 +230,7 @@
         }
     };
     CircleMenu.prototype.initCss = function(){
-        var self = this, 
+        var self = this,
             $items;
 
         self._state = 'closed';
@@ -270,7 +272,7 @@
                 commands = {
                 'init':function(){obj.init();},
                 'open':function(){obj.open();},
-                'close':function(){obj.close(true),
+                'close':function(){obj.close(true);},
                 'refresh':function(){obj.init(options);}
             };
             if(typeof options === 'string' && obj && commands[options]){
