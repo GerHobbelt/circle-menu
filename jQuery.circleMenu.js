@@ -270,7 +270,7 @@
                 commands = {
                 'init':function(){obj.init();},
                 'open':function(){obj.open();},
-                'close':function(){obj.close(true),
+                'close':function(){obj.close(true);},
                 'refresh':function(){obj.init(options);}
             };
             if(typeof options === 'string' && obj && commands[options]){
