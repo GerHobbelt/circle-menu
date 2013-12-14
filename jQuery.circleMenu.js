@@ -13,7 +13,8 @@
             step_out: 20,
             step_in: -20,
             trigger: 'hover',
-            transition_function: 'ease'
+            transition_function: 'ease',
+            item_selected_scale: 2
         };
 
     function vendorPrefixes(items,prop,value){
@@ -211,7 +212,7 @@
             selected = self.element.children('li:nth-child('+index+')');
             self.trigger('select',selected);
             vendorPrefixes(selected.add(set_other), 'transition', 'all 500ms ease-out');
-            vendorPrefixes(selected, 'transform', 'scale(' + (self.options.itemSelectedScale || 2) + ')');
+            vendorPrefixes(selected, 'transform', 'scale(' + self.options.item_selected_scale + ')');
             vendorPrefixes(set_other, 'transform', 'scale(0)');
             selected.css('opacity','0');
             set_other.css('opacity','0');
