@@ -149,10 +149,8 @@
         if(self.options.trigger === 'hover'){
             self.element.on('mouseenter',function(evt){
                 self.open();
-                $("#mousemode" + self.options.depth).text('mouseenter');
             }).on('mouseleave',function(evt){
                 self.close();
-                $("#mousemode" + self.options.depth).text('mouseleave');
             });
         }else if(self.options.trigger === 'click'){
             self.element.children('li:first-child').on('click', function(evt){
