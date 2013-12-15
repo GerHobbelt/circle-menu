@@ -1,21 +1,26 @@
-﻿html,body{height:100%;padding:0;margin:0;overflow:hidden;}
+﻿html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
 .menu li:first-child {
-    background:#f00;
-    font-weight:bold;
-    font-family:arial black;
-    font-size:200%;
-    background:url(http://i.imgur.com/3QGAU.png);
+    background: #f00;
+    font-weight: bold;
+    font-family: arial black;
+    font-size: 200%;
+    background: url(http://i.imgur.com/3QGAU.png);
     border-color: #fff;
     border-width: 2px;
     border-style: solid;
     box-shadow: 0 0 2px 1px #aaa;
 }
 .menu li {
-    background:#000;
-    color:#fff;
-    font-size:25px;
+    background: #000;
+    color: #fff;
+    font-size: 25px;
 }
-.menu a{
+.menu a {
     text-decoration: none;
     color:#fff;
 }
@@ -54,67 +59,69 @@
     transform: rotate(315deg);
 }
 
-nav{
-    width:200px;
-    float:left;
+nav {
+    width: 200px;
+    float: left;
 }
-nav ul{
-    list-style:none;
-    padding:0;
-    margin:0;
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
-nav a{
-    display:block;
-    text-decoration:none;
+nav a {
+    display: block;
+    text-decoration: none;
 }
-nav a.active{
-    background:blue;
-    color:#fff;
+nav a.active {
+    background: blue;
+    color: #fff;
 }
 #examples {
-    margin-left:200px;
+    margin-left: 200px;
 }
 
 #examples > div {
-    display:none;
-    width:300px;
-    height:300px;
-    border:1px solid black;
-    position:relative;
-    overflow:hidden;
+    display: none;
+    width: 300px;
+    height: 300px;
+    border: 1px solid black;
+    position: relative;
+    overflow: hidden;
 }
 
-.menu{position:absolute;}
+.menu {
+    position: absolute;
+}
 
-#menu2, #menu14, #menu15, #menu16{
-    left:135px;
-    top:135px;
+#menu2, #menu14, #menu15, #menu16 {
+    left: 135px;
+    top: 135px;
 }
-#menu3{
-    right:4px;
-    bottom:34px;
+#menu3 {
+    right: 4px;
+    bottom: 34px;
 }
-#menu4{
-    top:0;
-    right:4px;
+#menu4 {
+    top: 0;
+    right: 4px;
 }
-#menu5{
-    bottom:34px;
-    left:0;
+#menu5 {
+    bottom: 34px;
+    left: 0;
 }
-#menu6, #menu10{
-    top:0;
-    left:135px;
+#menu6, #menu10 {
+    top: 0;
+    left: 135px;
 }
-#menu7, #menu11{
-    top:135px;
-    left:0;
+#menu7, #menu11 {
+    top: 135px;
+    left: 0;
 }
-#menu8, #menu12{
-    bottom:34px;
-    left:135px;
+#menu8, #menu12 {
+    bottom: 34px;
+    left: 135px;
 }
-#menu9, #menu13{
-    top:135px;
-    right:4px;
+#menu9, #menu13 {
+    top: 135px;
+    right: 4px;
 }

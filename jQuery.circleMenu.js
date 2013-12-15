@@ -23,7 +23,7 @@
             destroy: null,
             open: null,
             close: null,
-            select: null 
+            select: null
         };
 
     function vendorPrefixes(items, prop, value){
@@ -262,8 +262,8 @@
                 v = $p.data('plugin_' + pluginName + '-index');
             } while ($p && v != null);
             self.trigger('select', {
-                $elem: selected, 
-                indexes: indexes, 
+                $elem: selected,
+                indexes: indexes,
                 nodes: nodes,
                 cascaded: cascaded || false
             });
@@ -315,7 +315,7 @@
             'text-align': 'center',
             'line-height': self.options.item_diameter + 'px',
             'position': 'absolute',
-            'z-index': 1,
+            'z-index': 1000 + self.options.depth - 1,
             'opacity': ''
         });
         self.element.children('li:first-child').css({
