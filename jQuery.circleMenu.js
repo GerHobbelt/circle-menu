@@ -74,6 +74,12 @@
         }
 
         self.menu_items = self.element.children('li:not(:first-child)');
+        // preserve position
+        self.menu_items.each(function() {
+        	$item = $(this);
+        	$item.data('plugin_' + pluginName + '-pos-x-orig', $item.position().left);
+        	$item.data('plugin_' + pluginName + '-pos-y-orig', $item.position().top);
+        });
         self.initCss();
         self.item_count = self.menu_items.length;
         self._step = (self.options.angle.end - self.options.angle.start) / (self.item_count-1);
@@ -186,16 +192,17 @@
 
             self._timeouts.push(setTimeout(function(){
                 $item.css({
-                    left: $item.data('plugin_' + pluginName + '-pos-x') + 'px',
-                    top: $item.data('plugin_' + pluginName + '-pos-y') + 'px'
+                    left: ($item.data('plugin_' + pluginName + '-pos-x') - ($item.outerWidth() / 2)) + 'px',
+                    top: ($item.data('plugin_' + pluginName + '-pos-y') - ($item.outerHeight() / 2)) + 'px'
                 });
                 vendorPrefixes($item, 'transform', 'scale(1)');
+                $item.css('opacity','1');
             }, start + Math.abs(self.options.step_out) * index));
         });
         self._timeouts.push(setTimeout(function(){
             if(self._state === 'opening') self.trigger('open');
             self._state = 'open';
-        },start + Math.abs(self.options.step_out) * set.length));
+        }, start + Math.abs(self.options.step_out) * set.length));
         self._state = 'opening';
         return self;
     };
@@ -219,10 +226,11 @@
 
                 self._timeouts.push(setTimeout(function(){
                     $item.css({
-                        top: 0,
-                        left: 0
+                    	top: $item.data('plugin_' + pluginName + '-pos-y-orig'),
+                    	left: $item.data('plugin_' + pluginName + '-pos-x-orig')
                     });
                     vendorPrefixes($item, 'transform', 'scale(.5)');
+                    $item.css('opacity','0');
                 }, start + Math.abs(self.options.step_in) * index));
             });
             self._timeouts.push(setTimeout(function(){
@@ -310,7 +318,7 @@
             'line-height': self.options.item_diameter + 'px'
         });
         $items = self.element.children('li');
-        $items.attr('style','');
+        $items.attr('style', '');
         $items.css({
             'display': 'block',
             'width': self.options.item_diameter + 'px',
@@ -319,16 +327,23 @@
             'line-height': self.options.item_diameter + 'px',
             'position': 'absolute',
             'z-index': 1000 + self.options.depth - 1,
-            'opacity': ''
+            'opacity': '0'
         });
         self.element.children('li:first-child').css({
             'z-index': 1000 + self.options.depth
+        }); 
+        // restore position
+        $items.each(function() {
+        	$item = $(this);
+		    $item.css({
+				top: $item.data('plugin_' + pluginName + '-pos-y-orig'),
+				left: $item.data('plugin_' + pluginName + '-pos-x-orig')
+			});
         });
-        self.menu_items.css({
-            top: 0,
-            left: 0
-        });
-        vendorPrefixes($items, 'border-radius', self.options.item_diameter + 'px');
+        
+        if (self.options.item_diameter) {
+            vendorPrefixes($items, 'border-radius', self.options.item_diameter + 'px');
+        }
         vendorPrefixes(self.menu_items, 'transform', 'scale(.5)');
         setTimeout(function(){
             vendorPrefixes($items, 'transition', 'all ' + self.options.speed + 'ms ' + self.options.transition_function);
