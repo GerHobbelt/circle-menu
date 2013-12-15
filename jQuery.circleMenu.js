@@ -149,10 +149,8 @@
         if(self.options.trigger === 'hover'){
             self.element.on('mouseenter',function(evt){
                 self.open();
-                return false;
             }).on('mouseleave',function(evt){
                 self.close();
-                return false;
             });
         }else if(self.options.trigger === 'click'){
             self.element.children('li:first-child').on('click', function(evt){
@@ -304,7 +302,12 @@
             'list-style': 'none',
             'margin': 0,
             'padding': 0,
-            'width': self.options.item_diameter + 'px'
+            'display': 'block',
+            // spec both WIDTH and HEIGHT for the UL to make it identical in size to the LI's
+            'width': self.options.item_diameter + 'px',
+            'height': self.options.item_diameter + 'px',
+            'text-align': 'center',
+            'line-height': self.options.item_diameter + 'px'
         });
         $items = self.element.children('li');
         $items.attr('style','');

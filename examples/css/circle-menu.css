@@ -99,14 +99,14 @@ nav a.active {
 }
 #menu3 {
     right: 4px;
-    bottom: 34px;
+    bottom: 4px;
 }
 #menu4 {
     top: 0;
     right: 4px;
 }
 #menu5 {
-    bottom: 34px;
+    bottom: 4px;
     left: 0;
 }
 #menu6, #menu10 {
@@ -118,7 +118,7 @@ nav a.active {
     left: 0;
 }
 #menu8, #menu12 {
-    bottom: 34px;
+    bottom: 4px;
     left: 135px;
 }
 #menu9, #menu13 {
