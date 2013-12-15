@@ -18,10 +18,12 @@
             item_selected_scale: 2,
 
             // event callbacks, which are trigger()ed as event name circleMenu-<event>
+            // WARNING: these entries in the `options` passed by the user will be DELETED by the .init() call (see below)
+            init: null,
+            destroy: null,
             open: null,
             close: null,
-            init: null,
-            select: null        // selected element (jQuery DOM node object) is passed as first trigger parameter, the item index as the second parameter
+            select: null 
         };
 
     function vendorPrefixes(items, prop, value){
@@ -83,31 +85,54 @@
 
             $item.data('plugin_' + pluginName + '-pos-x', x);
             $item.data('plugin_' + pluginName + '-pos-y', y);
-            $item.on('click', function(){
+            $item.data('plugin_' + pluginName + '-index', index);
+            $item.on('click', function(ev){
                 self.select(index + 2);
+                // stop bubbling up the click event; we cascade it up to the root circle menu ourselves (flagging each parent with 'cascaded=true')
+                return false;
             });
         });
 
         // Initialize event hooks from options
         var hooksArr = ['open','close','init','select'];
+        function register_callback(fn, evt, cb) {
+            var cb = cb || function(){
+                return fn.apply(self, arguments);
+            };
+            // unregister + register = make sure callback is only registered once for the event:
+            self.element.off(pluginName + '-' + evt, cb);
+            self.element.on(pluginName + '-' + evt, cb);
+            return cb;
+        }
         for(var i = 0; i < hooksArr.length; i++){
             var fn, evt = hooksArr[i];
 
             if(self.options[evt]){
                 fn = self.options[evt];
-                self.element.on(pluginName + '-' + evt, function(){
-                    return fn.apply(self, arguments);
-                });
-                delete self.options[evt];
+                // use a closure to keep the proper function linked with each event:
+                var cb = register_callback(fn, evt, self.options["__" + evt + "_cb"]);
+                // and mark the callback as registered:
+                self.options["__" + evt + "_cb"] = cb;
             }
         }
 
         self.submenus = self.menu_items.children('ul');
-        self.submenus.circleMenu($.extend({},self.options,{
-            depth: self.options.depth + 1
-        }));
+        self.submenus.each(function() {
+            var $item = $(this);
+            var $p = $item.parent();
+            $item.circleMenu($.extend({},self.options, {
+                depth: self.options.depth + 1,
+                __parent: $p.parent(),
+                __parent_index: $p.data('plugin_' + pluginName + '-index')
+            }));
+        });
 
         self.trigger('init');
+    };
+    CircleMenu.prototype.destroy = function(){
+        var self = this;
+
+        self.trigger('destroy');
     };
     CircleMenu.prototype.trigger = function(){
         var args = [],
@@ -124,11 +149,13 @@
         if(self.options.trigger === 'hover'){
             self.element.on('mouseenter',function(evt){
                 self.open();
+                return false;
             }).on('mouseleave',function(evt){
                 self.close();
+                return false;
             });
         }else if(self.options.trigger === 'click'){
-            self.element.children('li:first-child').on('click',function(evt){
+            self.element.children('li:first-child').on('click', function(evt){
                 evt.preventDefault();
                 if(self._state === 'closed' || self._state === 'closing'){
                     self.open();
@@ -194,7 +221,7 @@
 
                 self._timeouts.push(setTimeout(function(){
                     $item.css({
-                        top: 0, 
+                        top: 0,
                         left: 0
                     });
                     vendorPrefixes($item, 'transform', 'scale(.5)');
@@ -216,15 +243,30 @@
         }
         return this;
     };
-    CircleMenu.prototype.select = function(index){
+    CircleMenu.prototype.select = function(index, cascaded){
         var self = this,
-            selected, set_other;
+            selected, set_other, indexes, nodes, $p, v;
 
         if(self._state === 'open' || self._state === 'opening'){
             self.clearTimeouts();
             set_other = self.element.children('li:not(:nth-child('+index+'),:first-child)');
             selected = self.element.children('li:nth-child('+index+')');
-            self.trigger('select', selected, index);
+            indexes = [];
+            nodes = [];
+            v = index - 2;
+            $p = selected;
+            do {
+                indexes.push(v);
+                nodes.push($p);
+                $p = $p.parent().parent();
+                v = $p.data('plugin_' + pluginName + '-index');
+            } while ($p && v != null);
+            self.trigger('select', {
+                $elem: selected, 
+                indexes: indexes, 
+                nodes: nodes,
+                cascaded: cascaded || false
+            });
             vendorPrefixes(selected.add(set_other), 'transition', 'all 500ms ease-out');
             vendorPrefixes(selected, 'transform', 'scale(' + self.options.item_selected_scale + ')');
             vendorPrefixes(set_other, 'transform', 'scale(0)');
@@ -234,6 +276,14 @@
             setTimeout(function(){
                 self.initCss();
             }, 500);
+
+            // bubble up: mark the parent menu as selected too!
+            // We bubble up like this, instead of depending on the [click] event bubbling up itself, as we want to pass along the 'cascaded' flag:
+            var $p = self.options.__parent;
+            if ($p) {
+                var cm = $.data($p[0], 'plugin_' + pluginName);
+                cm.select(self.options.__parent_index + 2, true);
+            }
         }
     };
     CircleMenu.prototype.clearTimeouts = function(){
@@ -269,7 +319,7 @@
             'opacity': ''
         });
         self.element.children('li:first-child').css({
-            'z-index': 1000 - self.options.depth
+            'z-index': 1000 + self.options.depth
         });
         self.menu_items.css({
             top: 0,
@@ -288,6 +338,9 @@
                 commands = {
                 'init':function(){
                     obj.init();
+                },
+                'destroy':function(){
+                    obj.destroy();
                 },
                 'open':function(){
                     obj.open();

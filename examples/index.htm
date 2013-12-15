@@ -9,48 +9,50 @@
         <script>
             $(function(){
                 $('#examples')
-                .on('circleMenu-open', function(){
+                .on('circleMenu-open', function(ev){
                     console.log('menu X opened', arguments);
                 })
-                .on('circleMenu-close', function(){
+                .on('circleMenu-close', function(ev){
                     console.log('menu X closed', arguments);
                 })
-                .on('circleMenu-init', function(){
+                .on('circleMenu-init', function(ev){
                     console.log('menu X initialized', arguments);
                 })
-                .on('circleMenu-select', function(){
-                    console.log('menu X selected', arguments);
+                .on('circleMenu-select', function(ev, data){
+                    // order in indexes and nodes arrays is from child to parent; indexes are 0-based menu item index numbers:
+                    console.log('menu X selected', ev, data);
                 });
                 
                 $('#menu').circleMenu({
                     direction: 'bottom-right',
-                    open: function(){
+                    open: function(ev){
                         console.log('menu opened', arguments);
                     },
-                    close: function(){
+                    close: function(ev){
                         console.log('menu closed', arguments);
                     },
-                    init: function(){
+                    init: function(ev){
                         console.log('menu initialized', arguments);
                     }
                 });
                 $('#menu2').circleMenu({
                     direction:'full', 
                     trigger:'click',
-                    open: function(){
-                        console.log('menu opened', arguments);
+                    open: function(ev){
+                        console.log('menu 2 opened', arguments);
                     },
-                    close: function(){
-                        console.log('menu closed', arguments);
+                    close: function(ev){
+                        console.log('menu 2 closed', arguments);
                     },
-                    init: function(){
-                        console.log('menu initialized', arguments);
+                    init: function(ev){
+                        console.log('menu 2 initialized', arguments);
                     },
-                    select: function(el, index){
-                        console.log('menu selected', arguments);
+                    select: function(ev, data){
+                        // order in indexes and nodes arrays is from child to parent; indexes are 0-based menu item index numbers:
+                        console.log('menu 2 selected', ev, data);
                     }
-                }).on('circleMenu-open', function(){
-                    console.log('menu opened 2');
+                }).on('circleMenu-open', function(ev){
+                    console.log('menu opened 2', arguments);
                 });
                 $('#menu3').circleMenu({
                     direction:'top-left'
@@ -138,8 +140,9 @@
         <div id="examples">
             <div id="ex-corners">
                 <ul class="menu" id="menu">
+                    <li><a href="#"></a></li>
                     <li>
-                        <ul class="menu" id="submenu">
+                        <ul class="menu" id="submenu1">
                             <li><a href="#"></a></li>
                             <li><a href="#" alt="Item 1" title="Item 1">1</a></li>
                             <li><a href="#" alt="Item 2" title="Item 2">2</a></li>
@@ -148,11 +151,9 @@
                             <li><a href="#" alt="Item 5" title="Item 5">5</a></li>
                         </ul>
                     </li>
-                    <li><a href="#"></a></li>
-                    <li><a href="#" alt="Item 1" title="Item 1">1</a></li>
                     <li><a href="#" alt="Item 2" title="Item 2">2</a></li>
                     <li>
-                        <ul class="menu" id="submenu">
+                        <ul class="menu" id="submenu2">
                             <li><a href="#"></a></li>
                             <li><a href="#" alt="Item 1" title="Item 1">1</a></li>
                             <li><a href="#" alt="Item 2" title="Item 2">2</a></li>
@@ -162,9 +163,8 @@
                         </ul>
                     </li>
                     <li><a href="#" alt="Item 4" title="Item 4">4</a></li>
-                    <li><a href="#" alt="Item 5" title="Item 5">5</a></li>
                     <li>
-                        <ul class="menu" id="submenu">
+                        <ul class="menu" id="submenu3">
                             <li><a href="#"></a></li>
                             <li><a href="#" alt="Item 1" title="Item 1">1</a></li>
                             <li><a href="#" alt="Item 2" title="Item 2">2</a></li>
